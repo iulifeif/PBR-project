@@ -1,42 +1,67 @@
+import re
 import nltk
 
-# (deffacts facts (waiting_input) (answer)
-# (rule G1 S La A)
-# (rule G2  A librarie B)
-# (rule G3 B am C)
-# (rule G4  C cumparat D)
-# (rule G5 D o E)
-# (rule G6  E carte EPS)
-# (rule G7 S Am G)
-# (rule G8  G citit H)
-# (rule G9 H o E)
-# (rule G10  H la I)
-# (rule G11 I librarie EPS)
-# (rule G12  G cumparat J)
-# (rule G13 J si K)
-# (rule G14  K am C)
-# (rule G15 C citit H)
-# )
+
+grammar = {
+    "key": "value",
+    "s": ["np", "vp"],
+    "np": ["det", "n", "np", "rel"],
+    "vp": ["tv", "v", "np"],
+    "rel": ["rpn", "vp"]
+}
+
+
+def read_data(path):
+    sentences = [[]*100]
+    with open(path) as file:
+        data = file.read()
+    res = re.split('[.?!;]', data)
+    for sentence in res:
+        # aici exista niste probleme, string - list
+        if "," in sentence:
+            aux = sentence.split(",")
+            aux_sentence = ""
+            for word in aux:
+                aux_sentence += word
+            sentence = aux_sentence
+        if '\n' in sentence:
+            sentence = sentence[1:]
+        if sentence != '':
+            sentences.append(sentence)
+    return sentences
+
+
+def tokenize_sentences(sentences):
+    tokenized = []
+    for line in sentences[:-1]:
+        tokens = nltk.word_tokenize(line.lstrip())
+        tagged = nltk.pos_tag(tokens)
+        buffer = []
+        for index in range(len(tagged)):
+            buffer.append(tagged[index][1])
+        tokenized.append(buffer)
+    return tokenized
+
+
+def verifying_rules(tokenized):
+    for line in range(len(tokenized)):
+        for col in range(len(tokenized[line])-1):
+            actual_location = tokenized[line][col].lower()
+            future_location = tokenized[line][col+1].lower()
+            if actual_location not in grammar.keys():
+                grammar[actual_location] = future_location
+                print(actual_location, " ", future_location)
+            else:
+                if future_location not in grammar[actual_location]:
+                    grammar[actual_location].append(future_location)
+                    print(actual_location, " ", future_location)
+    print("success")
+    print(grammar)
+
 
 if __name__ == '__main__':
-    # download required nltk packages
-    # required for tokenization
-    nltk.download('punkt')
-    # required for parts of speech tagging
-    nltk.download('averaged_perceptron_tagger')
-
-    # input text
-    sentence = """Today morning, Arthur felt very good."""
-
-    # tokene into words
-    tokens = nltk.word_tokenize(sentence)
-
-    # parts of speech tagging
-    tagged = nltk.pos_tag(tokens)
-
-    buffer = []
-    for index in range(len(tagged)):
-        buffer.append(tagged[index][1])
-
-    # print tagged tokens
-    print(buffer)
+    sentences = []
+    sentences = read_data("./input.txt")
+    sentences_tokenized = tokenize_sentences(sentences[1:])
+    print(sentences_tokenized)
+    verifying_rules(sentences_tokenized)
