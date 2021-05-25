@@ -56,14 +56,14 @@ import re
 
 
 '''
-    Get rules from file 'rules' as string array
+    Get correct_rules from file 'correct_rules' as string array
     
 '''
 
 
 # def get_rules():
 #     lines = []
-#     file = open('rules', 'r')
+#     file = open('correct_rules', 'r')
 #     while True:
 #         line = file.readline()
 #         if not line:
@@ -135,7 +135,7 @@ def append_architecture_to_existing_rules(architecture):
     for morph in architecture:
         rule = rule + morph + ' '
     rule = rule[:-1]
-    file = open("rules", "a")
+    file = open("correct_rules", "a")
     file.write(rule)
     file.write('\n')
 
@@ -166,7 +166,7 @@ def parse_from_file(file_path_user_input):
     for i in range(len(parsing_result)):
         print(parsing_result[i])
 
-    add_all_sentences_as_rules = input('Do you wish to add the invalid sentences as rules ? (y/n)')
+    add_all_sentences_as_rules = input('Do you wish to add the invalid sentences as correct_rules ? (y/n)')
     if add_all_sentences_as_rules == 'y':
         add_all_sentences_as_rules = True
     else:
@@ -175,7 +175,7 @@ def parse_from_file(file_path_user_input):
         for i in range(len(parsing_result)):
             if not parsing_result[i]["parsingResult"]:
                 append_architecture_to_existing_rules(parsing_result[i]["pattern"])
-        print('All the needed rules added successfully!')
+        print('All the needed correct_rules added successfully!')
     print('No rule added...')
 
 

@@ -41,7 +41,7 @@
         ?a <- (text .)
         (answer $?steps)
         =>
-        (assert (state "YES"))
+        (assert (correct_state "YES"))
         (printout t "Seems to be CORRECT" $?steps crlf)
 
         (retract ?a)
@@ -50,7 +50,7 @@
 (defrule failure
         ?a <- (text $?)
         =>
-        (assert (state "NO"))
+        (assert (wrong_state "NO"))
         (printout t "This sentence seems to be incorrect." crlf)
 
         (retract ?a)

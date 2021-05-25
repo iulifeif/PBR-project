@@ -1,5 +1,6 @@
 import re
 
+import clips
 from clips import Environment, Symbol
 import os
 import nltk
@@ -34,11 +35,11 @@ def read_from_file():
 
 def read_rules():
     '''
-    This function reads the rules from rules.txt and returns them
-    :return: the rules read
+    This function reads the correct_rules from correct_rules.txt and returns them
+    :return: the correct_rules read
     '''
     lines = []
-    file = open('rules', 'r')
+    file = open('correct_rules', 'r')
     while True:
         line = file.readline()
         if not line:
@@ -48,22 +49,6 @@ def read_rules():
     for i, line in enumerate(lines):
         lines[i] = lines[i][:-1]
     return lines
-
-
-def parser(text):
-    '''
-    This function takes each sentence separately and parses and checks it
-    :param text: the text must be string for 1 sentece(from keyboard) or list for many sentences(from file)
-    '''
-    rules = read_rules()
-    if type(text) == str:
-        validate_sentence_by_rules1(parse_sentence(text))
-    elif type(text) == list:
-        for sentence in text:
-            validate_sentence_by_rules1(parse_sentence(sentence))
-            print("sentence")
-    else:
-        print("The input is invalid for parsing!")
 
 
 def parse_sentence(sentence):
@@ -80,20 +65,91 @@ def parse_sentence(sentence):
     return buffer
 
 
+def parser(text):
+    '''
+    This function takes each sentence separately and parses and checks it
+    :param text: the text must be string for 1 sentece(from keyboard) or list for many sentences(from file)
+    '''
+    rules = read_rules()
+    if type(text) == str:
+        aux_function(text)
+    elif type(text) == list:
+        for sentence in text:
+            aux_function(sentence)
+    else:
+        print("The input is invalid for parsing!")
+
+
+def aux_function(sentence):
+    rules = read_rules()
+    response = validate_sentence_by_rules2(rules, parse_sentence(sentence))
+    if response == 2:
+        print("Seems to be valid.")
+    else:
+        print("Seems to be incorrect.")
+    save_response = input("Do you want to save the rule? [y/n] :")
+    if save_response == "y":
+        corect_incorect = input("The sentence is correct? [y/n] : ")
+        save(corect_incorect, parse_sentence(sentence))
+
+
+def save(response, rule):
+    if response == "y":
+        with open('./correct_rules') as file:
+            file.write(rule)
+        file.close()
+    elif response == "n":
+        with open('./incorrect_rules') as file:
+            file.write(rule)
+        file.close()
+
+
 def validate_sentence_by_rules1(sentence):
     env = Environment()
-    env.load("/home/iuliana/Documents/Facultate/An3Sem2/PBR/PBR-project/rules.clp")
+    env.load("/home/iuliana/Documents/Facultate/An3Sem2/PBR/PBR-project/correct_rules.clp")
     env.assert_string('(text S (explode$ "{}"))'.format(sentence))
 
     fact_string = f'(state "Maybe")'
     fact = env.assert_string(fact_string)
     template = fact.template
-
     assert template.implied == True
-
     env.run()
     for fact in env.facts():
         print(fact)
+
+
+def validate_sentence_by_rules2(rules, architecture):
+    env = clips.Environment()
+    for cnt, i in enumerate(rules):
+        rule = '''
+            (defrule rule%s
+                (sentence %s)
+                =>
+                (printout t "The sentence is correct." crlf))
+            ''' % (str(cnt), i)
+        env.build(rule)
+    rule = '''
+        (defrule wrong
+            =>
+            (printout t "The sentence is wrong." crlf))
+        '''
+    env.build(rule)
+
+    sentence = ''
+    for i in architecture:
+        sentence = sentence + i + ' '
+    sentence = sentence[:-1]
+
+    # print(sentence)
+
+    fact_string = f'(sentence {sentence})'
+    fact = env.assert_string(fact_string)
+    template = fact.template
+
+    assert template.implied == True
+
+    validation_result = env.run()
+    return validation_result
 
 
 if __name__ == '__main__':
