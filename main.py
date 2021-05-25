@@ -204,21 +204,22 @@ def read_from_file(file_path):
 
 
 def main():
-    option = int(input('''
-        Press the corresponding number of the desired action:
-        1. Parse from console
-        2. Parse from file (path required)
-    '''))
-
-    if option == 1:
-        parse_from_console()
-        return
-    if option == 2:
-        file_path_user_input = input('Write the path to the file: ')
-        parse_from_file(file_path_user_input)
-        return
-    print('Invalid option number')
+    while True:
+        option = int(input('''
+                Press the corresponding number of the desired action:
+                1. Parse from console
+                2. Parse from file (path required)
+            '''))
+        if option == 1:
+            parse_from_console()
+            return
+        if option == 2:
+            file_path_user_input = input('Write the path to the file: ')
+            parse_from_file(file_path_user_input)
+            return
+        print('Invalid option number')
 
 
 if __name__ == "__main__":
     main()
+
