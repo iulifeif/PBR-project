@@ -6,23 +6,25 @@ import re
 # functie de parsare, ce primeste path catre un fisier, extrage propozitiile,
 # si va scrie intr-un alt fisier,
 # analiza acelor propozitii (engleza)
-def read_data_to_write_in_file(path):
-    with open(path, 'r') as file:
-        data = file.read()
-        data = ''.join(data.splitlines())
-        data = re.split('[.?!]', data)
-    with open('data.txt', 'w') as file:
-        for line in data[:-1]:
-            tokens = nltk.word_tokenize(line.lstrip())
-            tagged = nltk.pos_tag(tokens)
-            buffer = []
-            for index in range(len(tagged)):
-                buffer.append(tagged[index][1])
-            current = ''
-            for i in buffer:
-                if i not in ',:;)(':
-                    file.write(str(i) + ' ')
-            file.write('\n')
+
+
+# def read_data_to_write_in_file(path):
+#     with open(path, 'r') as file:
+#         data = file.read()
+#         data = ''.join(data.splitlines())
+#         data = re.split('[.?!]', data)
+#     with open('data.txt', 'w') as file:
+#         for line in data[:-1]:
+#             tokens = nltk.word_tokenize(line.lstrip())
+#             tagged = nltk.pos_tag(tokens)
+#             buffer = []
+#             for index in range(len(tagged)):
+#                 buffer.append(tagged[index][1])
+#             current = ''
+#             for i in buffer:
+#                 if i not in ',:;)(':
+#                     file.write(str(i) + ' ')
+#             file.write('\n')
 
 
 '''
@@ -31,26 +33,26 @@ def read_data_to_write_in_file(path):
 '''
 
 
-def read_sentence():
-    while True:
-        sentence = input("Sentence:")
-        if sentence[-1] not in ['.', '?', '!', ';']:
-            print("You didn't finished the sentence properly.")
-        else:
-            cnt = 0
-            for i in sentence:
-                if i in ['.', '?', '!', ';']:
-                    cnt = cnt + 1
-            if cnt == 1:
-                return sentence
-            else:
-                print("Read only one sentence at a time.")
+# def read_sentence():
+#     while True:
+#         sentence = input("Sentence:")
+#         if sentence[-1] not in ['.', '?', '!', ';']:
+#             print("You didn't finished the sentence properly.")
+#         else:
+#             cnt = 0
+#             for i in sentence:
+#                 if i in ['.', '?', '!', ';']:
+#                     cnt = cnt + 1
+#             if cnt == 1:
+#                 return sentence
+#             else:
+#                 print("Read only one sentence at a time.")
 
 
-def words_tagging(sentence):
-    tokens = nltk.word_tokenize(sentence)
-    tagged = nltk.pos_tag(tokens)
-    return tagged
+# def words_tagging(sentence):
+#     tokens = nltk.word_tokenize(sentence)
+#     tagged = nltk.pos_tag(tokens)
+#     return tagged
 
 
 '''
@@ -59,52 +61,52 @@ def words_tagging(sentence):
 '''
 
 
-def get_rules():
-    lines = []
-    file = open('rules', 'r')
-    while True:
-        line = file.readline()
-        if not line:
-            break
-        lines.append(line)
-    file.close()
-    for i, line in enumerate(lines):
-        lines[i] = lines[i][:-1]
-    return lines
+# def get_rules():
+#     lines = []
+#     file = open('rules', 'r')
+#     while True:
+#         line = file.readline()
+#         if not line:
+#             break
+#         lines.append(line)
+#     file.close()
+#     for i, line in enumerate(lines):
+#         lines[i] = lines[i][:-1]
+#     return lines
 
 
-def validate_sentence_by_rules(rules, architecture):
-    env = clips.Environment()
-    for cnt, i in enumerate(rules):
-        rule = '''
-        (defrule rule%s
-            (sentence %s)
-            =>
-            (printout t "The sentence is correct." crlf))
-        ''' % (str(cnt), i)
-        env.build(rule)
-    rule = '''
-    (defrule wrong
-        =>
-        (printout t "The sentence is wrong." crlf))
-    '''
-    env.build(rule)
-
-    sentence = ''
-    for i in architecture:
-        sentence = sentence + i + ' '
-    sentence = sentence[:-1]
-
-    # print(sentence)
-
-    fact_string = f'(sentence {sentence})'
-    fact = env.assert_string(fact_string)
-    template = fact.template
-
-    assert template.implied == True
-
-    validation_result = env.run()
-    return validation_result
+# def validate_sentence_by_rules(rules, architecture):
+#     env = clips.Environment()
+#     for cnt, i in enumerate(rules):
+#         rule = '''
+#         (defrule rule%s
+#             (sentence %s)
+#             =>
+#             (printout t "The sentence is correct." crlf))
+#         ''' % (str(cnt), i)
+#         env.build(rule)
+#     rule = '''
+#     (defrule wrong
+#         =>
+#         (printout t "The sentence is wrong." crlf))
+#     '''
+#     env.build(rule)
+#
+#     sentence = ''
+#     for i in architecture:
+#         sentence = sentence + i + ' '
+#     sentence = sentence[:-1]
+#
+#     # print(sentence)
+#
+#     fact_string = f'(sentence {sentence})'
+#     fact = env.assert_string(fact_string)
+#     template = fact.template
+#
+#     assert template.implied == True
+#
+#     validation_result = env.run()
+#     return validation_result
 
 
 def get_result_handler_console(sentence, architecture, correctitude):
@@ -152,8 +154,8 @@ def get_pattern_from_sentence(sentence):
     return pattern_to_be_validated
 
 
-def parse_from_console():
-    solve_single_sentence(read_sentence())
+# def parse_from_console():
+#     solve_single_sentence(read_sentence())
 
 
 def parse_from_file(file_path_user_input):
@@ -197,29 +199,29 @@ def parsing_sentence_array(sentences):
     return parse_result
 
 
-def read_from_file(file_path):
-    with open(file_path, 'r') as file:
-        data = file.read()
-        return nltk.sent_tokenize(data)
+# def read_from_file(file_path):
+#     with open(file_path, 'r') as file:
+#         data = file.read()
+#         return nltk.sent_tokenize(data)
 
 
-def main():
-    while True:
-        option = int(input('''
-                Press the corresponding number of the desired action:
-                1. Parse from console
-                2. Parse from file (path required)
-            '''))
-        if option == 1:
-            parse_from_console()
-            return
-        if option == 2:
-            file_path_user_input = input('Write the path to the file: ')
-            parse_from_file(file_path_user_input)
-            return
-        print('Invalid option number')
+# def main():
+#     while True:
+#         option = int(input('''
+#                 Press the corresponding number of the desired action:
+#                 1. Parse from console
+#                 2. Parse from file (path required)
+#             '''))
+#         if option == 1:
+#             parse_from_console()
+#             return
+#         if option == 2:
+#             file_path_user_input = input('Write the path to the file: ')
+#             parse_from_file(file_path_user_input)
+#             return
+#         print('Invalid option number')
 
-
-if __name__ == "__main__":
-    main()
+#
+# if __name__ == "__main__":
+#     main()
 
