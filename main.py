@@ -75,38 +75,38 @@ import re
 #     return lines
 
 
-# def validate_sentence_by_rules(rules, architecture):
-#     env = clips.Environment()
-#     for cnt, i in enumerate(rules):
-#         rule = '''
-#         (defrule rule%s
-#             (sentence %s)
-#             =>
-#             (printout t "The sentence is correct." crlf))
-#         ''' % (str(cnt), i)
-#         env.build(rule)
-#     rule = '''
-#     (defrule wrong
-#         =>
-#         (printout t "The sentence is wrong." crlf))
-#     '''
-#     env.build(rule)
-#
-#     sentence = ''
-#     for i in architecture:
-#         sentence = sentence + i + ' '
-#     sentence = sentence[:-1]
-#
-#     # print(sentence)
-#
-#     fact_string = f'(sentence {sentence})'
-#     fact = env.assert_string(fact_string)
-#     template = fact.template
-#
-#     assert template.implied == True
-#
-#     validation_result = env.run()
-#     return validation_result
+def validate_sentence_by_rules(rules, architecture):
+    env = clips.Environment()
+    for cnt, i in enumerate(rules):
+        rule = '''
+        (defrule rule%s
+            (sentence %s)
+            =>
+            (printout t "The sentence is correct." crlf))
+        ''' % (str(cnt), i)
+        env.build(rule)
+    rule = '''
+    (defrule wrong
+        =>
+        (printout t "The sentence is wrong." crlf))
+    '''
+    env.build(rule)
+
+    sentence = ''
+    for i in architecture:
+        sentence = sentence + i + ' '
+    sentence = sentence[:-1]
+
+    # print(sentence)
+
+    fact_string = f'(sentence {sentence})'
+    fact = env.assert_string(fact_string)
+    template = fact.template
+
+    assert template.implied == True
+
+    validation_result = env.run()
+    return validation_result
 
 
 def get_result_handler_console(sentence, architecture, correctitude):

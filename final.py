@@ -55,11 +55,13 @@ def parser(text):
     This function takes each sentence separately and parses and checks it
     :param text: the text must be string for 1 sentece(from keyboard) or list for many sentences(from file)
     '''
+    rules = read_rules()
     if type(text) == str:
-        validate_sentence_by_rules(parse_sentence(text))
+        validate_sentence_by_rules1(parse_sentence(text))
     elif type(text) == list:
         for sentence in text:
-            validate_sentence_by_rules(parse_sentence(sentence))
+            validate_sentence_by_rules1(parse_sentence(sentence))
+            print("sentence")
     else:
         print("The input is invalid for parsing!")
 
@@ -78,9 +80,20 @@ def parse_sentence(sentence):
     return buffer
 
 
-def validate_sentence_by_rules(sentence):
+def validate_sentence_by_rules1(sentence):
     env = Environment()
     env.load("/home/iuliana/Documents/Facultate/An3Sem2/PBR/PBR-project/rules.clp")
+    env.assert_string('(text S (explode$ "{}"))'.format(sentence))
+
+    fact_string = f'(state "Maybe")'
+    fact = env.assert_string(fact_string)
+    template = fact.template
+
+    assert template.implied == True
+
+    env.run()
+    for fact in env.facts():
+        print(fact)
 
 
 if __name__ == '__main__':
@@ -96,4 +109,3 @@ if __name__ == '__main__':
         elif option == "2":
             parser(read_from_file())
             break
-    print("Successfully!")
