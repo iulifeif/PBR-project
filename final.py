@@ -1,6 +1,7 @@
 import re
 
-import clips
+from clips import Environment, Symbol
+import os
 import nltk
 
 
@@ -54,12 +55,11 @@ def parser(text):
     This function takes each sentence separately and parses and checks it
     :param text: the text must be string for 1 sentece(from keyboard) or list for many sentences(from file)
     '''
-    rules = read_rules()
     if type(text) == str:
-        validate = validate_sentence_by_rules(rules, parse_sentence(text))
+        validate_sentence_by_rules(parse_sentence(text))
     elif type(text) == list:
         for sentence in text:
-            validate = validate_sentence_by_rules(rules, parse_sentence(sentence))
+            validate_sentence_by_rules(parse_sentence(sentence))
     else:
         print("The input is invalid for parsing!")
 
@@ -78,38 +78,9 @@ def parse_sentence(sentence):
     return buffer
 
 
-def validate_sentence_by_rules(rules, architecture):
-    env = clips.Environment()
-    for cnt, i in enumerate(rules):
-        rule = '''
-        (defrule rule%s
-            (sentence %s)
-            =>
-            (printout t "The sentence is correct." crlf))
-        ''' % (str(cnt), i)
-        env.build(rule)
-    rule = '''
-    (defrule wrong
-        =>
-        (printout t "The sentence is wrong." crlf))
-    '''
-    env.build(rule)
-
-    sentence = ''
-    for i in architecture:
-        sentence = sentence + i + ' '
-    sentence = sentence[:-1]
-
-    # print(sentence)
-
-    fact_string = f'(sentence {sentence})'
-    fact = env.assert_string(fact_string)
-    template = fact.template
-
-    assert template.implied == True
-
-    validation_result = env.run()
-    return validation_result
+def validate_sentence_by_rules(sentence):
+    env = Environment()
+    env.load("/home/iuliana/Documents/Facultate/An3Sem2/PBR/PBR-project/rules.clp")
 
 
 if __name__ == '__main__':
