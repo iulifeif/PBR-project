@@ -174,6 +174,7 @@ def parse_from_file(file_path_user_input):
             if not parsing_result[i]["parsingResult"]:
                 append_architecture_to_existing_rules(parsing_result[i]["pattern"])
         print('All the needed rules added successfully!')
+    print('No rule added...')
 
 
 def parsing_sentence_array(sentences):

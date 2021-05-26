@@ -29,29 +29,25 @@ def read_from_file():
     '''
     with open("./input.txt") as file:
         input_text = file.read()
-    text_splited = re.split('[.?!;]', input_text)
-    return text_splited
+    text_splited = re.split('[\n]', input_text)
+    return text_splited[:-1]
 
 
 def read_rules():
     '''
-    This function reads the correct_rules from correct_rules.txt and returns them
-    :return: the correct_rules read
+    This function reads the rules from rules.txt and returns them
+    :return: the rules read
     '''
     lines = []
-    file = open('correct_rules', 'r')
-    while True:
+    with open("rules") as file:
         line = file.readline()
-        if not line:
-            break
-        lines.append(line)
-    file.close()
-    for i, line in enumerate(lines):
-        lines[i] = lines[i][:-1]
+        while line:
+            lines.append(line)
+            line = file.readline()
     return lines
 
 
-def parse_sentence(sentence):
+def tokenize_sentence(sentence):
     '''
     This function parses with ntlk the sentence received
     :param sentence is a string
@@ -72,66 +68,59 @@ def parser(text):
     '''
     rules = read_rules()
     if type(text) == str:
-        aux_function(text)
+        sentence_processing(text)
     elif type(text) == list:
         for sentence in text:
-            aux_function(sentence)
+            sentence_processing(sentence)
     else:
         print("The input is invalid for parsing!")
 
 
-def aux_function(sentence):
+def sentence_processing(sentence):
     rules = read_rules()
-    response = validate_sentence_by_rules2(rules, parse_sentence(sentence))
-    if response == 2:
-        print("Seems to be valid.")
+    tokenized = tokenize_sentence(sentence)
+    response = validate_sentence_by_rules(rules, tokenized)
+    if response == 1:
+        print("Arhitecture: {}".format(tokenized))
+        print("Sentence: '{}' seems to be incorrect.".format(sentence))
+        corectness = input("Is the sentence '{}' valid? [y/n] :".format(sentence))
+        if corectness == "y":
+            save_rule(tokenized)
     else:
-        print("Seems to be incorrect.")
-    save_response = input("Do you want to save the rule? [y/n] :")
-    if save_response == "y":
-        corect_incorect = input("The sentence is correct? [y/n] : ")
-        save(corect_incorect, parse_sentence(sentence))
+        print("Arhitecture: {}".format(tokenized))
+        print("Sentence: '{}' seems to be valid.".format(sentence))
 
 
-def save(response, rule):
-    if response == "y":
-        with open('./correct_rules') as file:
-            file.write(rule)
-        file.close()
-    elif response == "n":
-        with open('./incorrect_rules') as file:
-            file.write(rule)
-        file.close()
+def save_rule(rule):
+    '''
+    This rule save the rule to
+    :param response:
+    :param rule:
+    :return:
+    '''
+    rule_string = ""
+    for r in rule:
+        rule_string += str(r)+" "
+    rule_string = rule_string[:-1]
+    with open('rules', "a") as file:
+        file.write(rule_string)
+        file.write("\n")
 
 
-def validate_sentence_by_rules1(sentence):
-    env = Environment()
-    env.load("/home/iuliana/Documents/Facultate/An3Sem2/PBR/PBR-project/correct_rules.clp")
-    env.assert_string('(text S (explode$ "{}"))'.format(sentence))
-
-    fact_string = f'(state "Maybe")'
-    fact = env.assert_string(fact_string)
-    template = fact.template
-    assert template.implied == True
-    env.run()
-    for fact in env.facts():
-        print(fact)
-
-
-def validate_sentence_by_rules2(rules, architecture):
+def validate_sentence_by_rules(rules, architecture):
     env = clips.Environment()
     for cnt, i in enumerate(rules):
         rule = '''
             (defrule rule%s
                 (sentence %s)
                 =>
-                (printout t "The sentence is correct." crlf))
+                (printout t ""))
             ''' % (str(cnt), i)
         env.build(rule)
     rule = '''
         (defrule wrong
             =>
-            (printout t "The sentence is wrong." crlf))
+            (printout t "" crlf))
         '''
     env.build(rule)
 
